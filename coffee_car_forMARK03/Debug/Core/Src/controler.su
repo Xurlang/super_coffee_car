@@ -1,0 +1,5 @@
+../Core/Src/controler.c:13:6:parse_controler_data	8	static
+../Core/Src/controler.c:43:6:coffee_motor_control	4	static
+../Core/Src/controler.c:55:6:velo_mode_controler	8	static
+../Core/Src/controler.c:84:6:motor_mode_change	4	static
+../Core/Src/controler.c:97:6:receive_data_handle	16	static
