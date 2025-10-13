@@ -1,0 +1,17 @@
+#所有的一般可执行文件
+/**/*.exe
+#KeilIDE编辑器忽略项
+/**/MDK-ARM/*
+#不忽略kei1工程配置文件
+!/**/MDK-ARM/*.uVoptx
+!/**/MDK-ARM/*.uVprojx
+!/**/MDK-ARM/startup_*.s
+#armgcc-cmake工程忽略项
+/**/cmake-build-debug
+#Vscode编辑器忽略项
+/**/.vscode
+/**/workspace.code-workspace
+#clion编辑器忽略项
+/**/.idea
+**/Objects/
+keil/*.HMI
