@@ -2388,29 +2388,29 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      1284         94          0         69        132      10216   can.o
-       824         98          0          4         96       3774   controler.o
-       220         16          0          0          0       1087   gpio.o
-       982        170          0         23       1034     738626   main.o
-      1452        226          0          4          0       6401   motor_can.o
-        36          8        392          0       1024        852   startup_stm32f407xx.o
-       180         28          0         12          0       9549   stm32f4xx_hal.o
-      1658          6          0          0          0      14607   stm32f4xx_hal_can.o
-       198         14          0          0          0      34047   stm32f4xx_hal_cortex.o
-       182          0          0          0          0       2147   stm32f4xx_hal_dma.o
-       556         52          0          0          0       4219   stm32f4xx_hal_gpio.o
-        48          6          0          0          0        890   stm32f4xx_hal_msp.o
-      1348         76          0          0          0       5336   stm32f4xx_hal_rcc.o
-       984         44          0          0          0      10253   stm32f4xx_hal_tim.o
-       148         28          0          0          0       2521   stm32f4xx_hal_tim_ex.o
-      1372         16          0          0          0       8858   stm32f4xx_hal_uart.o
-       114         40          0          0          0       7768   stm32f4xx_it.o
-        16          4         24          4          0       1175   system_stm32f4xx.o
-       168         20          0          0         72       1770   tim.o
-       508         64          0          0        204       3344   usart.o
+      1284         94          0         69        132      10448   can.o
+       824         98          0          4         96       3882   controler.o
+       220         16          0          0          0       1119   gpio.o
+       982        170          0         23       1034     738926   main.o
+      1452        226          0          4          0       6517   motor_can.o
+        36          8        392          0       1024        868   startup_stm32f407xx.o
+       180         28          0         12          0       9665   stm32f4xx_hal.o
+      1658          6          0          0          0      14899   stm32f4xx_hal_can.o
+       198         14          0          0          0      34135   stm32f4xx_hal_cortex.o
+       182          0          0          0          0       2195   stm32f4xx_hal_dma.o
+       556         52          0          0          0       4315   stm32f4xx_hal_gpio.o
+        48          6          0          0          0        918   stm32f4xx_hal_msp.o
+      1348         76          0          0          0       5432   stm32f4xx_hal_rcc.o
+       984         44          0          0          0      10461   stm32f4xx_hal_tim.o
+       148         28          0          0          0       2581   stm32f4xx_hal_tim_ex.o
+      1372         16          0          0          0       9030   stm32f4xx_hal_uart.o
+       114         40          0          0          0       8008   stm32f4xx_it.o
+        16          4         24          4          0       1223   system_stm32f4xx.o
+       168         20          0          0         72       1830   tim.o
+       508         64          0          0        204       3416   usart.o
 
     ----------------------------------------------------------------------
-     12300       1010        448        120       2564     867440   Object Totals
+     12300       1010        448        120       2564     869868   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         22          0          0          4          2          0   (incl. Padding)
 
@@ -2465,8 +2465,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     14428       1080        448        124       2564     856852   Grand Totals
-     14428       1080        448        124       2564     856852   ELF Image Totals
+     14428       1080        448        124       2564     859280   Grand Totals
+     14428       1080        448        124       2564     859280   ELF Image Totals
      14428       1080        448        124          0          0   ROM Totals
 
 ==============================================================================
