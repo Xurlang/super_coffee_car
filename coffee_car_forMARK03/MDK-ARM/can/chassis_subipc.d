@@ -1,7 +1,7 @@
 can\chassis_subipc.o: ..\Core\Src\chassis_subipc.c
 can\chassis_subipc.o: ../Core/Inc/chassis_subipc.h
-can\chassis_subipc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-can\chassis_subipc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+can\chassis_subipc.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdio.h
+can\chassis_subipc.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdint.h
 can\chassis_subipc.o: ../Core/Inc/can.h
 can\chassis_subipc.o: ../Core/Inc/main.h
 can\chassis_subipc.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
@@ -18,7 +18,7 @@ can\chassis_subipc.o: ../Drivers/CMSIS/Include/mpu_armv7.h
 can\chassis_subipc.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 can\chassis_subipc.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 can\chassis_subipc.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-can\chassis_subipc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+can\chassis_subipc.o: D:\Keil\ARM\ARMCC\Bin\..\include\stddef.h
 can\chassis_subipc.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 can\chassis_subipc.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 can\chassis_subipc.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
