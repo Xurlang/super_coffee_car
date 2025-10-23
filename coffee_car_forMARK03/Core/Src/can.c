@@ -47,8 +47,10 @@ void smooth(double *act, double target){
   }
 }
 //------------------------------------------------------------------------------------------------//
-int target_linear_velocity,target_angular_velocity;
-int target_velocity_left,target_velocity_right;
+float target_linear_velocity,target_angular_velocity;
+float target_velocity_left, target_velocity_right;
+float r = 0.0655; // 轮子半径，单位m 0.131/2
+int target_rpm_left, target_rpm_right;
 GPIO_PinState temp = GPIO_PIN_SET;
 CAN_FilterTypeDef CAN_Filter_Structure;//can滤波器结构体
 CAN_TxHeaderTypeDef Can_Tx;//can发�?�结构体
@@ -327,7 +329,7 @@ void motor_enable(uint32_t ID){
 	while(flag_enabling){
 		switch(process_num)
 		{
-			case 1: //synchronous mode
+			case 1: 
 			{
 			CAN_Tx_Data[0] = 0x2B;
 			CAN_Tx_Data[1] = 0x40;
@@ -342,7 +344,7 @@ void motor_enable(uint32_t ID){
 			process_num++;
 			break;
 			}
-			case 2://velo mode 
+			case 2:
 			{
 				CAN_Tx_Data[0] = 0x2B;
 				CAN_Tx_Data[1] = 0x40;
@@ -357,7 +359,7 @@ void motor_enable(uint32_t ID){
 				process_num++;
 				break;
 			}
-			case 3://left acc_time :ms
+			case 3:
 			{
 				CAN_Tx_Data[0] = 0x2B;
 				CAN_Tx_Data[1] = 0x40;
@@ -420,7 +422,7 @@ union velo velo_left,velo_right;
 void motor_transmit_velo(uint32_t ID,int velocity_left,int velocity_right){
 	velo_left.dble = velocity_left;
 	velo_right.dble = velocity_right;
-	CAN_Tx_Data[0] = 0x23;
+	CAN_Tx_Data[0] = 0x23;  
 	CAN_Tx_Data[1] = 0xFF;
 	CAN_Tx_Data[2] = 0x60;
 	CAN_Tx_Data[3] = 0x03;
@@ -491,14 +493,18 @@ void controler_control_motor(){
 		// target_velocity_left = - target_linear_velocity + target_angular_velocity;
 		// target_velocity_right =  (target_linear_velocity + target_angular_velocity);
 
+        // 符号没反了？
 		target_velocity_left = - filtered_linear_velocity + filtered_angular_velocity;
 		target_velocity_right =  (filtered_linear_velocity + filtered_angular_velocity);
 
-		if(abs(target_velocity_left )< 5)
-			{target_velocity_left = 0;}
+        // 实际速度转为电机转速
+        target_rpm_left = (int)(target_velocity_left * 60 / (2 * 3.1416 * r));
+        target_rpm_right = (int)(target_velocity_right * 60 / (2 * 3.1416 * r));
+		// if(abs(target_velocity_left )< 5)
+		// 	{target_velocity_left = 0;}
 
-		if(abs(target_velocity_right) < 5)
-			{target_velocity_right = 0;}
+		// if(abs(target_velocity_right) < 5)
+		// 	{target_velocity_right = 0;}
 
 		// if(target_velocity_left > 1000) //防止超过最大转速
 		// 	{target_velocity_left = 1000;}
@@ -508,8 +514,8 @@ void controler_control_motor(){
 		// 	{target_velocity_right = 1000;}
 		// if(target_velocity_right < -1000) 
 		// 	{target_velocity_right = -1000;}
-		motor_transmit_velo(0x601,target_velocity_left,target_velocity_right);
-//		motor_transmit_velo(0x601,-200,200);
+        motor_transmit_velo(0x601, target_rpm_left, target_rpm_right);
+        //		motor_transmit_velo(0x601,-200,200);
 		break;
 	case 5:
 		motor_disable(0x601);
