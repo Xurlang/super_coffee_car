@@ -7,5 +7,4 @@ void velo_mode_controler(void);
 void motor_mode_change(void);
 void receive_data_handle(void);
 void parse_controler_data(void);
-
-
+void coffee_motor_control(void);

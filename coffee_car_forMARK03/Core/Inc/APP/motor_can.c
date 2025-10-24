@@ -1,5 +1,5 @@
 #include "motor_can.h"
-
+#include "controler.h"
 extern uint8_t rising_falling_flag;
 extern uint16_t test_state;
 extern uint16_t test_flag;

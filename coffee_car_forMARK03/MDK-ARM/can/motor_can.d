@@ -36,3 +36,4 @@ can\motor_can.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 can\motor_can.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 can\motor_can.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 can\motor_can.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdbool.h
+can\motor_can.o: ../Core/Inc/controler.h

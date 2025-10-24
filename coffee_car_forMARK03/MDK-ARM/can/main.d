@@ -41,3 +41,4 @@ can\main.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdio.h
 can\main.o: ../Core/Inc/controler.h
 can\main.o: ../Core/Inc/APP/INC/motor_can.h
 can\main.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdbool.h
+can\main.o: D:\Keil\ARM\ARMCC\Bin\..\include\string.h

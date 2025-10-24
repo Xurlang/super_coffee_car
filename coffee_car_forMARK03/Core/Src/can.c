@@ -50,6 +50,7 @@ void smooth(double *act, double target){
 float target_linear_velocity,target_angular_velocity;
 float target_velocity_left, target_velocity_right;
 float r = 0.0655; // 轮子半径，单位m 0.131/2
+float WHEEL_BASE = 0.39; // 轮距，单位m
 int target_rpm_left, target_rpm_right;
 GPIO_PinState temp = GPIO_PIN_SET;
 CAN_FilterTypeDef CAN_Filter_Structure;//can滤波器结构体
@@ -487,36 +488,36 @@ void controler_control_motor(){
 		break;
 	case 2:
 	//滤波
-	filtered_linear_velocity = 0.955f * filtered_linear_velocity + 0.045f * target_linear_velocity;
-	filtered_angular_velocity = 0.955f * filtered_angular_velocity + 0.045f * target_angular_velocity;
+	// filtered_linear_velocity = 0.955f * filtered_linear_velocity + 0.045f * target_linear_velocity;
+	// filtered_angular_velocity = 0.955f * filtered_angular_velocity + 0.045f * target_angular_velocity;
 
 		// target_velocity_left = - target_linear_velocity + target_angular_velocity;
 		// target_velocity_right =  (target_linear_velocity + target_angular_velocity);
 
-        // 符号没反了？
-		target_velocity_left = - filtered_linear_velocity + filtered_angular_velocity;
-		target_velocity_right =  (filtered_linear_velocity + filtered_angular_velocity);
+        //
+    target_velocity_left = target_linear_velocity - (target_angular_velocity * WHEEL_BASE) / 2.0f;
+    target_velocity_right = target_linear_velocity + (target_angular_velocity * WHEEL_BASE) / 2.0f;
 
-        // 实际速度转为电机转速
-        target_rpm_left = (int)(target_velocity_left * 60 / (2 * 3.1416 * r));
-        target_rpm_right = (int)(target_velocity_right * 60 / (2 * 3.1416 * r));
-		// if(abs(target_velocity_left )< 5)
-		// 	{target_velocity_left = 0;}
+    // 实际速度转为电机转速
+    target_rpm_left = (int16_t)(target_velocity_left * 60 / (2 * 3.1416 * r));
+    target_rpm_right = (int16_t)(target_velocity_right * 60 / (2 * 3.1416 * r));
+    // if(abs(target_velocity_left )< 5)
+    // 	{target_velocity_left = 0;}
 
-		// if(abs(target_velocity_right) < 5)
-		// 	{target_velocity_right = 0;}
+    // if(abs(target_velocity_right) < 5)
+    // 	{target_velocity_right = 0;}
 
-		// if(target_velocity_left > 1000) //防止超过最大转速
-		// 	{target_velocity_left = 1000;}
-		// if(target_velocity_left < -1000) 
-		// 	{target_velocity_left = -1000;}
-		// if(target_velocity_right > 1000) 
-		// 	{target_velocity_right = 1000;}
-		// if(target_velocity_right < -1000) 
-		// 	{target_velocity_right = -1000;}
-        motor_transmit_velo(0x601, target_rpm_left, target_rpm_right);
-        //		motor_transmit_velo(0x601,-200,200);
-		break;
+    // if(target_velocity_left > 1000) //防止超过最大转速
+    // 	{target_velocity_left = 1000;}
+    // if(target_velocity_left < -1000)
+    // 	{target_velocity_left = -1000;}
+    // if(target_velocity_right > 1000)
+    // 	{target_velocity_right = 1000;}
+    // if(target_velocity_right < -1000)
+    // 	{target_velocity_right = -1000;}
+    motor_transmit_velo(0x601, target_rpm_left, target_rpm_right);
+    //		motor_transmit_velo(0x601,-200,200);
+    break;
 	case 5:
 		motor_disable(0x601);
 		break;

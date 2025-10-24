@@ -35,7 +35,7 @@ extern "C" {
 extern CAN_HandleTypeDef hcan1;
 
 /* USER CODE BEGIN Private defines */
-extern int target_linear_velocity,target_angular_velocity;
+extern float target_linear_velocity, target_angular_velocity;
 
 extern CAN_TxHeaderTypeDef Can_Tx;//can发�?�结构体
 extern CAN_RxHeaderTypeDef CAN_Rx;//can接收结构�???

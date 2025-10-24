@@ -29,6 +29,7 @@
 #include "chassis_subipc.h"
 #include "controler.h"
 #include "motor_can.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +51,7 @@
 
 /* USER CODE BEGIN PV */
 int count = 0;
+int stop_count = 0;
 uint8_t RX[10];
 uint8_t speed_data[10];
 uint32_t ID = 0;
@@ -77,7 +79,7 @@ uint8_t flag_big_bin_and_triangle = 0;
 uint8_t star = 0;
 int len = 0;
 int countmain = 0;
-
+extern int target_rpm_left, target_rpm_right;
 volatile bool device_responded = true;
 uint32_t last_check_time = 0;
 
@@ -213,7 +215,7 @@ int main(void)
             jerk_process = 0;
             test_flag = 0;
         }
-        if (test_flag = 111)
+        if (test_flag == 111)
         {
             CAN_Tx_Data[0] = 0x2B;
             CAN_Tx_Data[1] = 0x40;
@@ -337,7 +339,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
             memcpy(&target_linear_velocity, &speed_data[1], 4);
             memcpy(&target_angular_velocity, &speed_data[5], 4);
 
-            rx_flag = 1; // 标记数据有效
+            stop_count = 0;
         }
         HAL_UART_Receive_IT(&huart1, speed_data, 10);
         // printf("REV : %x\r\n", RX[0]);
@@ -395,7 +397,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         // printf("receive accomplish\r\n");
     }
 }
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim == &htim1) // 10ms 1次
+    {
+        stop_count++;
+        if (stop_count >= 50)//0.5s
+        {
+            stop_count = 0;
+            target_rpm_left = 0;
+            target_rpm_right = 0;
+        }
+    }
+}
 /* USER CODE END 4 */
 
 /**
