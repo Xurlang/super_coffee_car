@@ -495,8 +495,8 @@ void controler_control_motor(){
 		// target_velocity_right =  (target_linear_velocity + target_angular_velocity);
 
         //
-    target_velocity_left = target_linear_velocity - (target_angular_velocity * WHEEL_BASE) / 2.0f;
-    target_velocity_right = target_linear_velocity + (target_angular_velocity * WHEEL_BASE) / 2.0f;
+    target_velocity_left = target_angular_velocity - (target_linear_velocity * WHEEL_BASE) / 2.0f;
+    target_velocity_right =target_angular_velocity  + (target_linear_velocity * WHEEL_BASE) / 2.0f;
 
     // 实际速度转为电机转速
     target_rpm_left = (int16_t)(target_velocity_left * 60 / (2 * 3.1416 * r));

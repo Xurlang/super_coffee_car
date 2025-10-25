@@ -152,8 +152,9 @@ int main(void)
     HAL_CAN_Start(&hcan1);
     printf("working !\r\n");
     HAL_UART_Receive_IT(&huart3, RX, 1);
-    HAL_UART_Receive_IT(&huart1, speed_data, 10);
-
+    HAL_UART_Receive_IT(&huart6, speed_data, 10);
+	
+		HAL_TIM_Base_Start_IT(&htim1);
     // 检测can是否连接成功
     if (HAL_CAN_Start(&hcan1) == HAL_OK)
     {
@@ -170,8 +171,10 @@ int main(void)
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
+		uint8_t a=1;
     while (1)
     {
+			//HAL_UART_Transmit(&huart6,&a,1,100);
         // if(rx_flag==1)
         // {
         //     rx_flag = 0;
@@ -304,35 +307,35 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     uint8_t ReBuff;
-    if (huart->Instance == USART3)
-    {
-        ReBuff = RX[0];
-        if (ReBuff == 0x0f)
-        {
-            len = 0;
-            rec[0] = 0x0f;
-        }
-        if (rec[0] == 0x0f)
-        {
-            rec[len] = ReBuff;
-        }
-        len++;
-        if (len >= 24)
-        {
-            if (len > 1000)
-            {
-                len = 0;
-            }
-            else
-            {
-                receive_data_handle();
-            }
-        }
-        //		USART_SendData (UART1,ReBuff);
-        //		printf(" %x \r\n",ReBuff);
-        HAL_UART_Receive_IT(&huart3, RX, 1);
-    }
-    if (huart->Instance == USART1)
+//    if (huart->Instance == USART3)
+//    {
+//        ReBuff = RX[0];
+//        if (ReBuff == 0x0f)
+//        {
+//            len = 0;
+//            rec[0] = 0x0f;
+//        }
+//        if (rec[0] == 0x0f)
+//        {
+//            rec[len] = ReBuff;
+//        }
+//        len++;
+//        if (len >= 24)
+//        {
+//            if (len > 1000)
+//            {
+//                len = 0;
+//            }
+//            else
+//            {
+//                receive_data_handle();
+//            }
+//        }
+//        //		USART_SendData (UART1,ReBuff);
+//        //		printf(" %x \r\n",ReBuff);
+//        HAL_UART_Receive_IT(&huart3, RX, 1);
+//    }
+    if (huart->Instance == USART6)
     {
         if(speed_data[0]==0xAA && speed_data[9]==0x55)
         {
@@ -341,7 +344,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
             stop_count = 0;
         }
-        HAL_UART_Receive_IT(&huart1, speed_data, 10);
+        HAL_UART_Receive_IT(&huart6, speed_data, 10);
         // printf("REV : %x\r\n", RX[0]);
         // if (RX[0] == 0x31)
         // {
@@ -405,8 +408,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         if (stop_count >= 50)//0.5s
         {
             stop_count = 0;
-            target_rpm_left = 0;
-            target_rpm_right = 0;
+            target_linear_velocity = 0;
+            target_angular_velocity = 0;
         }
     }
 }
