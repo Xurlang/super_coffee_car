@@ -82,10 +82,19 @@ int countmain = 0;
 extern int target_rpm_left, target_rpm_right;
 volatile bool device_responded = true;
 uint32_t last_check_time = 0;
+uint8_t data_buf[1 + 4 + 4 + 1] = {0};
 
 float linear_x = 0.0;
 float angular_z = 0.0;
 uint8_t rx_flag = 0;
+uint8_t send_speed_counter = 0;
+extern union velo act_velo_left, act_velo_right;
+float send_linear_vel = 0.0;  // 线速度值
+float send_angular_vel = 0.0; // 角速度值
+extern float left_speed_rpm;
+extern float right_speed_rpm;
+extern float WHEEL_BASE;
+extern float r; // 轮子半径，单位m 0.131/2
 
 /* USER CODE END PV */
 
@@ -153,8 +162,8 @@ int main(void)
     printf("working !\r\n");
     HAL_UART_Receive_IT(&huart3, RX, 1);
     HAL_UART_Receive_IT(&huart6, speed_data, 10);
-	
-		HAL_TIM_Base_Start_IT(&htim1);
+
+    HAL_TIM_Base_Start_IT(&htim1);
     // 检测can是否连接成功
     if (HAL_CAN_Start(&hcan1) == HAL_OK)
     {
@@ -171,22 +180,60 @@ int main(void)
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
-		uint8_t a=1;
+    motor_enable(0x601); // 电机使能控制函数//紧接在速度模式初始化之后的，必须要
+    HAL_Delay(100);
+     //TPDO0_Setup() ;
+
     while (1)
     {
-			//HAL_UART_Transmit(&huart6,&a,1,100);
+        // HAL_UART_Transmit(&huart6,&a,1,100);
         // if(rx_flag==1)
         // {
         //     rx_flag = 0;
-
 
         // }
 
         countmain++;
 
+        // 发送实际速度20ms一次
+        if (send_speed_counter >= 5)
+        {
+            send_speed_counter = 0;
+            // 读取电机速度
+            // read_motor_state(0x601);
+
+            // 4. 步骤1：电机实际转速 → 左/右车轮实际线速度（m/s）
+            float actual_wheel_v_left = (left_speed_rpm * 2 * 3.1415926 * r) / 60.0f;
+            float actual_wheel_v_right = (right_speed_rpm * 2 * 3.1415926 * r) / 60.0f;
+
+            // 5. 步骤2：车轮线速度 → 车辆实际线速度、角速度
+            send_linear_vel = (actual_wheel_v_left + actual_wheel_v_right) / 2.0f;        // 线速度（平均）
+            send_angular_vel = (actual_wheel_v_right - actual_wheel_v_left) / WHEEL_BASE; // 角速度（速度差/轮距）
+
+            int index = 0;
+
+            data_buf[index++] = 0xAA;
+
+            // 存储线速度（float类型，4字节）
+            memcpy(&data_buf[index], &send_linear_vel, 4);
+            index += 4;
+
+            // 存储角速度（float类型，4字节）
+            memcpy(&data_buf[index], &send_angular_vel, 4);
+            index += 4;
+
+            // 添加帧尾
+            data_buf[index++] = 0x55;
+
+            if (huart6.gState == HAL_UART_STATE_READY)
+            {
+                HAL_UART_Transmit_IT(&huart6, data_buf, index);
+            }
+        }
+
         coffee_car_test();
 
-        HAL_Delay(1);
+        // HAL_Delay(1);
 
         HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_RESET);
@@ -307,37 +354,37 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     uint8_t ReBuff;
-//    if (huart->Instance == USART3)
-//    {
-//        ReBuff = RX[0];
-//        if (ReBuff == 0x0f)
-//        {
-//            len = 0;
-//            rec[0] = 0x0f;
-//        }
-//        if (rec[0] == 0x0f)
-//        {
-//            rec[len] = ReBuff;
-//        }
-//        len++;
-//        if (len >= 24)
-//        {
-//            if (len > 1000)
-//            {
-//                len = 0;
-//            }
-//            else
-//            {
-//                receive_data_handle();
-//            }
-//        }
-//        //		USART_SendData (UART1,ReBuff);
-//        //		printf(" %x \r\n",ReBuff);
-//        HAL_UART_Receive_IT(&huart3, RX, 1);
-//    }
+    //    if (huart->Instance == USART3)
+    //    {
+    //        ReBuff = RX[0];
+    //        if (ReBuff == 0x0f)
+    //        {
+    //            len = 0;
+    //            rec[0] = 0x0f;
+    //        }
+    //        if (rec[0] == 0x0f)
+    //        {
+    //            rec[len] = ReBuff;
+    //        }
+    //        len++;
+    //        if (len >= 24)
+    //        {
+    //            if (len > 1000)
+    //            {
+    //                len = 0;
+    //            }
+    //            else
+    //            {
+    //                receive_data_handle();
+    //            }
+    //        }
+    //        //		USART_SendData (UART1,ReBuff);
+    //        //		printf(" %x \r\n",ReBuff);
+    //        HAL_UART_Receive_IT(&huart3, RX, 1);
+    //    }
     if (huart->Instance == USART6)
     {
-        if(speed_data[0]==0xAA && speed_data[9]==0x55)
+        if (speed_data[0] == 0xAA && speed_data[9] == 0x55)
         {
             memcpy(&target_linear_velocity, &speed_data[1], 4);
             memcpy(&target_angular_velocity, &speed_data[5], 4);
@@ -405,7 +452,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (htim == &htim1) // 10ms 1次
     {
         stop_count++;
-        if (stop_count >= 50)//0.5s
+        send_speed_counter++;
+
+        if (stop_count >= 50) // 0.5s
         {
             stop_count = 0;
             target_linear_velocity = 0;

@@ -69,6 +69,9 @@ void motor_clear_error(uint32_t ID);
 void motor_transmit_velo(uint32_t ID,int velocity_left,int velocity_right);
 void controler_control_motor(void);
 void coffee_car_test(void);
+void read_motor_state(uint32_t ID);
+HAL_StatusTypeDef Config_TPDO0(void);
+HAL_StatusTypeDef TPDO0_Setup(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
