@@ -162,7 +162,7 @@ int main(void)
     printf("working !\r\n");
     HAL_UART_Receive_IT(&huart3, RX, 1);
     HAL_UART_Receive_IT(&huart6, speed_data, 10);
-
+ 
     HAL_TIM_Base_Start_IT(&htim1);
     // 检测can是否连接成功
     if (HAL_CAN_Start(&hcan1) == HAL_OK)
@@ -182,7 +182,20 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     motor_enable(0x601); // 电机使能控制函数//紧接在速度模式初始化之后的，必须要
     HAL_Delay(100);
-     //TPDO0_Setup() ;
+    // TPDO0_Setup() ;
+    // 发送 NMT 启动命令（激活 PDO，Node-ID=1）
+    CAN_TxHeaderTypeDef nmt_hdr;
+    uint32_t tx_mailbox;
+    uint8_t nmt_data[2] = {0x01, 0x01}; // 0x01=启动操作，0x01=Node-ID
+    nmt_hdr.StdId = 0x000;              // NMT 命令 COB-ID 固定0x000
+    nmt_hdr.RTR = CAN_RTR_DATA;
+    nmt_hdr.DLC = 2;
+    nmt_hdr.TransmitGlobalTime = DISABLE;
+    if (HAL_CAN_AddTxMessage(&hcan1, &nmt_hdr, nmt_data, &tx_mailbox) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+    HAL_Delay(1000);
 
     while (1)
     {

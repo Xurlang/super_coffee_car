@@ -668,7 +668,7 @@ HAL_StatusTypeDef TPDO0_Setup(void)
        {
            return HAL_ERROR;
        }
-       HAL_Delay(100); // 等待驱动器应答
+       HAL_Delay(5000); // 等待驱动器应答
     // 2. 映射电机速度（0x606C 03 → TPDO0 映射1）
         sdo_data[0] = 0x23;
         sdo_data[1] = 0x00;
@@ -682,7 +682,7 @@ HAL_StatusTypeDef TPDO0_Setup(void)
         {
             return HAL_ERROR;
         }
-        HAL_Delay(100);
+        HAL_Delay(5000);
 
     // 触发方式 定时器
         sdo_data[0] = 0x2F;
@@ -697,7 +697,7 @@ HAL_StatusTypeDef TPDO0_Setup(void)
         {
             return HAL_ERROR;
         }
-        HAL_Delay(100);
+        HAL_Delay(5000);
 
     // 触发方式 定时器 时间10ms
         sdo_data[0] = 0x2B; // 文档是2B  AI给的是2F  实际调试注意这里看看哪个对
@@ -712,7 +712,7 @@ HAL_StatusTypeDef TPDO0_Setup(void)
         {
             return HAL_ERROR;
         }
-        HAL_Delay(100);
+        HAL_Delay(5000);
 
     // 4. 启用映射（索引0x1A00，子索引0设1）
         sdo_data[0] = 0x2F;
@@ -727,7 +727,7 @@ HAL_StatusTypeDef TPDO0_Setup(void)
         {
             return HAL_ERROR;
         }
-        HAL_Delay(100);
+        HAL_Delay(5000);
 
     //保存eeprom
          sdo_data[0] = 0x2B;
@@ -742,8 +742,9 @@ HAL_StatusTypeDef TPDO0_Setup(void)
          {
              return HAL_ERROR;
          }
-         HAL_Delay(100);
+         HAL_Delay(5000);
     // 6. 发送 NMT 启动命令（激活 PDO，Node-ID=1）
+    
     CAN_TxHeaderTypeDef nmt_hdr;
     uint8_t nmt_data[2] = {0x01, 0x01}; // 0x01=启动操作，0x01=Node-ID
     nmt_hdr.StdId = 0x000;              // NMT 命令 COB-ID 固定0x000
@@ -754,7 +755,7 @@ HAL_StatusTypeDef TPDO0_Setup(void)
     {
         return HAL_ERROR;
     }
-    HAL_Delay(100);
+    HAL_Delay(5000);
     return HAL_OK;
 }
 // 定义全局变量存储双电机速度（单位：0.1r/min，后续需转换为r/min）
