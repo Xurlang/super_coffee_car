@@ -1,0 +1,27 @@
+<launch>
+
+  <!-- 1. RealSense -->
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="enable_color" value="true"/>
+    <arg name="color_width"  value="640"/>
+    <arg name="color_height" value="480"/>
+    <arg name="color_fps" value="30"/>
+    <arg name="enable_depth" value="true"/>
+    <arg name="align_depth" value="true"/>
+  </include>
+
+  <!-- 2. AprilTag -->
+  <node pkg="apriltag_ros" type="apriltag_ros_continuous_node"
+        name="apriltag_detector" output="screen">
+
+    <!-- 加载 YAML -->
+    <rosparam command="load" file="$(find d435i_pkg)/config/tags.yaml"/>
+
+    <param name="camera_frame" value="camera_color_optical_frame"/>
+
+    <remap from="image_rect" to="/camera/color/image_raw"/>
+    <remap from="camera_info" to="/camera/color/camera_info"/>
+
+  </node>
+
+</launch>

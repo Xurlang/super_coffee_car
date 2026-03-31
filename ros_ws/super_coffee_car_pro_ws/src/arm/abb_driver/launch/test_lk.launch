@@ -1,0 +1,11 @@
+<launch>
+
+  <node 
+    name="testmove" 
+    pkg="abb_driver" 
+    type="test_lk.py" 
+    output="screen"
+  >
+    </node>
+
+</launch>

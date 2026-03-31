@@ -1,0 +1,82 @@
+TebLocalPlannerROS:
+
+ odom_topic: odom
+ map_frame: /map
+    
+ # ==============================================
+ # Robot (机器人动力学参数 - 这里的设置决定速度)
+ # ==============================================
+         
+ max_vel_x: 0.3           # <--- 最大速度：改为 0.6 m/s (之前是0.15)
+ max_vel_x_backwards: 0.15  # <--- 倒车速度：改为 0.2 m/s (倒车还是慢点好)
+ max_vel_theta: 0.5        # <--- 旋转速度：改为 1.0 rad/s (约57度/秒，转弯更灵敏)
+ 
+ acc_lim_x: 0.3           # <--- 线性加速度：改为 0.5 (提速稍微快一点，不然半天加不上去)
+ acc_lim_theta: 0.5        # <--- 角加速度：改为 1.0 (转向响应更快)
+ 
+ # Footprint (机器人形状)
+ # 你的小车大概是 0.4m x 0.4m，我们设一个略大的安全框
+ footprint_model: 
+   type: "polygon"
+   #这里定义了四个角的坐标，相对于车中心
+   vertices: [[0.28, 0.22], [0.28, -0.22], [-0.28, -0.22], [-0.28, 0.22]] 
+
+ # GoalTolerance (到达目标的容忍度)
+    
+ xy_goal_tolerance: 0.10   # 距离目标 10cm 就算到达
+ yaw_goal_tolerance: 0.10  # 角度误差 0.1弧度 就算到达
+ free_goal_vel: False      # 到达目标时必须停车
+ latch_xy_goal_tolerance: true
+    
+ # Trajectory & Obstacles (路径规划与避障)
+    
+ teb_autosize: True
+ dt_ref: 0.6
+ dt_hysteresis: 0.1
+ global_plan_overwrite_orientation: True
+ max_global_plan_lookahead_dist: 2.0
+ feasibility_check_no_poses: 5
+    
+ min_obstacle_dist: 0.08   # <--- 避障距离：离障碍物 35cm 就坚决不过去 (安全第一)
+ include_costmap_obstacles: True
+ costmap_obstacles_behind_robot_dist: 1.0
+ obstacle_poses_affected: 30
+ costmap_converter_plugin: ""
+ costmap_converter_spin_thread: True
+ costmap_converter_rate: 5
+
+ # Optimization (优化参数，一般不用动)
+    
+ no_inner_iterations: 2
+ no_outer_iterations: 1
+ optimization_activate: True
+ optimization_verbose: False
+ penalty_epsilon: 0.05
+ weight_max_vel_x: 2
+ weight_max_vel_theta: 1
+ weight_acc_lim_x: 1
+ weight_acc_lim_theta: 1
+ weight_kinematics_nh: 500
+ weight_kinematics_forward_drive: 1
+ weight_kinematics_turning_radius: 1
+ weight_optimaltime: 1
+ weight_obstacle: 50
+ weight_dynamic_obstacle: 10 
+ selection_alternative_time_cost: False
+
+ # Homotopy Class Planner (多路径拓扑规划)
+
+ enable_homotopy_class_planning: False
+ enable_multithreading: True
+ simple_exploration: False
+ max_number_classes: 2    # 为了省算力，只算2条备选路径
+ roadmap_graph_no_samples: 15
+ roadmap_graph_area_width: 5
+ h_signature_prescaler: 0.5
+ h_signature_threshold: 0.1
+ obstacle_keypoint_offset: 0.1
+ obstacle_heading_threshold: 0.45
+ visualize_hc_graph: False
+
+
+ min_turning_radius: 0.0

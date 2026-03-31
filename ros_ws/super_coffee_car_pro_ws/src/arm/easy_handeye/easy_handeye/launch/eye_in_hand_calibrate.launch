@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<launch>
+    <!-- 生成标定文件的名称 -->
+    <arg name="namespace_prefix" default="rm_rs_d435" />
+    <!-- 机械臂 MoveIt!配置的 move_group 为 arm，所以修改为 arm -->
+    <arg name="move_group" default="arm" /> 
+    <!-- start easy_handeye -->
+    <include file="$(find easy_handeye)/launch/calibrate.launch" >
+        <arg name="namespace_prefix" value="$(arg namespace_prefix)" />
+        <arg name="move_group" value="$(arg move_group)" />
+        <!-- 这里使用眼在手上的方式进行标定，所以此处改成 true -->
+        <arg name="eye_on_hand" value="true" />
+        <!--tracking_base_frame 为 realsense 的相机坐标系-->
+
+        <!-- <arg name="tracking_base_frame" value="camera_color_frame" /> -->
+        <arg name="tracking_base_frame" value="camera_link" />
+
+        <!--tracking_marker_frame 对应 aruco_ros 包中 single_realsense.launch 中的     marker_frame 的值-->
+        <arg name="tracking_marker_frame" value="aruco_marker_frame" />
+        <!--robot_base_frame 为机器人基座坐标系-->
+        <arg name="robot_base_frame" value="base_link" />
+        <!--robot_effector_frame 为工具坐标系，如夹爪，吸盘等-->
+        <arg name="robot_effector_frame" value="link6" />
+        <!---->
+        <arg name="freehand_robot_movement" value="true" />
+        <arg name="robot_velocity_scaling" value="0.5" />
+        <arg name="robot_acceleration_scaling" value="0.2" />
+
+    </include>
+</launch>
+

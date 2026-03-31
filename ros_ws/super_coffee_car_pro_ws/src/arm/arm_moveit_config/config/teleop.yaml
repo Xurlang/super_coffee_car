@@ -1,0 +1,21 @@
+axis_linear:
+  x: 1        # 左摇杆上下 (Axis 1) -> 前后移动
+  y: 0        # 左摇杆左右 (Axis 0) -> 左右横移
+  z: 7        # 十字键上下 (D-Pad) -> 垂直升降
+
+axis_angular:
+  yaw: 3      # 右摇杆左右 (Axis 3) -> 左右摇头 (Yaw)
+  # pitch: 4    # 右摇杆上下 (Axis 4) -> 抬头低头 (Pitch)
+  roll: 4     # 十字键左右 (D-Pad) -> 旋转
+
+scale_linear: # 2. 速度缩放 (数值越大越灵敏)
+  x: 0.15
+  y: 0.15
+  z: 0.15 
+
+scale_angular:
+  yaw: 1.2
+  pitch: 0.4 
+  roll: 0.4
+
+enable_button: 4 # 3. 安全键(RB) 按住使能

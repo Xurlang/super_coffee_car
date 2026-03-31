@@ -1,0 +1,20 @@
+# 忽略 ROS 编译生成的文件夹及文件
+build/
+devel/
+install/
+.catkin_workspace
+
+# 忽略 src 目录下的顶层 CMakeLists.txt (由 catkin_init_workspace 自动生成，不需要追踪)
+src/CMakeLists.txt
+
+# 忽略 Python 编译缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 忽略编辑器配置和系统缓存文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

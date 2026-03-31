@@ -1,0 +1,22 @@
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_footprint
+
+  update_frequency: 2.0  # 降低频率节省 CPU
+  publish_frequency: 2.0
+  transform_tolerance: 0.5
+
+  # --- 静态地图配置 ---
+  static_map: true
+  
+  # --- 安全边界 ---
+  # 必须为 true，防止规划路径穿过地图外的未知区域
+  track_unknown_space: true
+  unknown_cost_value: 0 # 这里的 0 表示未知区域不视为致命障碍(由 track_unknown_space 控制逻辑)，或者设为 255 强制不可行
+
+  # --- 插件加载 ---
+  # 显式定义插件，确保加载顺序和逻辑
+  plugins:
+    - {name: static_layer,            type: "costmap_2d::StaticLayer"}
+    - {name: obstacle_layer,          type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}

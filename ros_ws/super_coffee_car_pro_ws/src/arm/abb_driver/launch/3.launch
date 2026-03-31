@@ -1,0 +1,11 @@
+<launch>
+  <include file="$(find abb_driver)/launch/dm_bringup.launch" />
+  <node 
+    name="testmove" 
+    pkg="abb_driver" 
+    type="3_rpy差补.py" 
+    output="screen"
+  >
+    </node>
+
+</launch>

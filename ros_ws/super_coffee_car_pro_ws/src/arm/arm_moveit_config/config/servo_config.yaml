@@ -1,0 +1,57 @@
+publish_period: 0.01 
+command_in_type: "speed_units"
+
+# --- 1. 核心命名与坐标系 ---
+use_gazebo: false
+move_group_name:  arm          # 你的规划组名
+planning_frame: base_link      # 你的基座
+ee_frame_name: tcp_link        # 你的末端
+robot_link_command_frame: tcp_link 
+
+# --- 2. 输入话题 ---
+cartesian_command_in_topic: /servo_server/delta_twist_cmds
+joint_command_in_topic: /servo_server/delta_joint_cmds
+joint_topic:  /joint_states
+status_topic: /servo_server/status
+warning_topic: /servo_server/warning
+
+# --- 3. 输出话题 ---
+# command_out_topic: /abb/cmd_servo_vel
+command_out_topic: /abb/cmd_servo_vel_raw
+command_out_type: std_msgs/Float64MultiArray
+publish_period: 0.02
+publish_joint_positions: false
+publish_joint_velocities: true
+publish_joint_accelerations: false
+
+# --- 4. 控制参数 (安全速度) ---
+scale:
+  linear:  0.2   # 线速度 (米/秒)
+  rotational: 0.5 # 角速度 (弧度/秒)
+  joint: 0.5
+
+incoming_command_timeout: 10.0
+num_outgoing_halt_msgs_to_publish: 4
+
+# --- 5. 碰撞检测 ---
+# --- 在文件末尾添加以下内容 ---
+check_joint_limits: false        # 核心：直接关掉 Servo 的限位自检
+joint_limit_margin: 0.0           # 容差设为 0，不留死角
+low_pass_filter_coeff: 1.5        # 稍微调低滤波，让反馈更直接，防止指令“飘”出限位
+check_collisions: false
+collision_check_rate: 10.0
+collision_check_type: threshold_distance
+self_collision_proximity_threshold: 0.01
+scene_collision_proximity_threshold: 0.05
+collision_distance_safety_factor: 1000.0
+min_allowable_collision_distance: 0.01
+
+# --- 6. 其他 ---
+# lower_singularity_threshold:  2.0
+# hard_stop_singularity_threshold: 5.0
+lower_singularity_threshold: 1000
+hard_stop_singularity_threshold: 1000
+leaving_singularity_threshold_multiplier: 2.0
+check_singularities: false
+
+drift_dimensions: [0, 0, 0, 0, 1, 0]

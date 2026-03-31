@@ -1,0 +1,34 @@
+# ==================================================
+# Move Base 通用参数配置 (修复版)
+# ==================================================
+
+# 1. 基础设置
+shutdown_costmaps: false
+
+# 2. 频率设置 (解决卡顿的关键)
+# 建议改为 10.0 Hz。之前 5Hz 太慢，导致机器人容易错过“到达判定”的那一瞬间。
+controller_frequency: 10.0  
+controller_patience: 15.0
+
+# 全局规划没必要太快，1.0 Hz 或 5.0 Hz 都可以
+planner_frequency: 5.0
+planner_patience: 5.0
+
+# 3. 震荡保护 (解决“到了终点不动也不结算”的核心)
+# 【重点修改】改为 0.0 以禁用震荡超时检测。
+# 之前是 10.0，意味着如果在终点附近磨叽超过 10秒，它就会认为“卡死了”并停止输出成功信号。
+oscillation_timeout: 0.0
+oscillation_distance: 0.2
+
+# 4. 恢复行为
+conservative_reset_dist: 3.0
+
+# ==================================================
+# 5. 强制参数 (双重保险)
+# ==================================================
+# 明确告诉 move_base 你用的是 TEB
+base_local_planner: "teb_local_planner/TebLocalPlannerROS"
+
+# 再次强调：一旦进圈，就锁定位置，只修角度 (解决“进进出出”的问题)
+latch_xy_goal_tolerance: true
+

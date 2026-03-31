@@ -1,0 +1,32 @@
+arm:
+  # 原来的规划器配置
+  # kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
+  # kinematics_solver_search_resolution: 0.005
+  # kinematics_solver_timeout: 0.1
+  # position_only_ik: true
+  # solve_type: Distance
+
+  # 2026/1/31
+  # kinematics_solver: bio_ik/BioIKKinematicsPlugin
+  # kinematics_solver_search_resolution: 0.05
+  # kinematics_solver_timeout: 0.1
+  # mode: gd_c 
+
+  # dpos: 50.0 # 1. 目标位置的权重
+  # drot: 1.0      # 2. 目标姿态的权重
+  # center_joints: 0.1   # 3. 关节中心回位权重
+  # minimal_displacement: 10.0 # 4. 最小位移权重
+  # position_only_ik: false
+
+  # goal_joint_tolerance: 0.01
+  # goal_position_tolerance: 0.005
+  # goal_orientation_tolerance: 0.05
+  # tip_name: tcp_link
+  
+  # 2026/2/10 lk:改用origin
+  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+  kinematics_solver_search_resolution: 0.005
+  kinematics_solver_timeout: 0.005
+  # goal_joint_tolerance: 0.001
+  # goal_position_tolerance: 0.001
+  # goal_orientation_tolerance: 0.01

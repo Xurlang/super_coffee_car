@@ -1,0 +1,8 @@
+<launch>
+  <node pkg="follow_waypoints" type="follow_waypoints" name="follow_waypoints" output="screen">
+    
+    <param name="addpose_topic" value="/clicked_point" />
+
+    <param name="goal_frame_id" value="map" />
+  </node>
+</launch>

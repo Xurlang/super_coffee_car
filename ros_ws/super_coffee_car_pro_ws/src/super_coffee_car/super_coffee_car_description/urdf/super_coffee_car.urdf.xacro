@@ -1,0 +1,316 @@
+<?xml version="1.0"?>
+<robot name="super_coffee_car" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="wheelbase" value="0.375" />
+    <xacro:property name="rear_track" value="0.39" />
+    <xacro:property name="front_track" value="0.37" />
+
+    <xacro:property name="chassis_length" value="0.40" />
+    <xacro:property name="chassis_width" value="0.40" />
+    <xacro:property name="chassis_height" value="0.10" />
+    <xacro:property name="chassis_mass" value="5.0" />
+
+    <xacro:property name="rear_wheel_diameter" value="0.12" />
+    <xacro:property name="rear_wheel_radius" value="${rear_wheel_diameter / 2}" />
+    <xacro:property name="rear_wheel_width" value="0.04" />
+    <xacro:property name="rear_wheel_mass" value="0.5" />
+
+    <xacro:property name="caster_diameter" value="0.10" />
+    <xacro:property name="caster_radius" value="${caster_diameter / 2}" />
+    <xacro:property name="caster_width" value="0.04" />
+    <xacro:property name="caster_mass" value="0.2" />
+
+    <xacro:property name="lidar_offset_x" value="0.35" />
+    <xacro:property name="lidar_height_ground" value="0.755" />
+    <xacro:property name="lidar_tilt_angle" value="0.0" />
+    
+    <xacro:property name="camera_offset_x" value="0.42" />
+    <xacro:property name="camera_height_ground" value="0.70" />
+    
+    <xacro:property name="lidar_radius" value="0.05" />
+    <xacro:property name="lidar_height" value="0.05" />
+    <xacro:property name="camera_width" value="0.09" />
+    <xacro:property name="camera_height" value="0.025" />
+    <xacro:property name="camera_depth" value="0.025" />
+    
+    <xacro:property name="PI" value="3.1415926535" />
+
+
+    <xacro:macro name="Box_inertial_matrix" params="m l w h">
+      <inertial>
+        <mass value="${m}" />
+        <inertia ixx="${m*(h*h + l*l)/12}" ixy = "0" ixz = "0"
+                 iyy="${m*(w*w + l*l)/12}" iyz= "0"
+                 izz="${m*(w*w + h*h)/12}" />
+      </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="cylinder_inertial_matrix" params="m r h">
+      <inertial>
+        <mass value="${m}" />
+        <inertia ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0"
+                 iyy="${m*(3*r*r+h*h)/12}" iyz = "0"
+                 izz="${m*r*r/2}" />
+      </inertial>
+    </xacro:macro>
+
+    <link name="base_footprint" />
+
+    <link name="base_link">
+        <visual>
+            <origin xyz="${wheelbase / 2} 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+            </geometry>
+            <material name="grey">
+                <color rgba="0.5 0.5 0.5 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="${wheelbase / 2} 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${chassis_mass}" />
+            <origin xyz="${wheelbase / 2} 0 0" rpy="0 0 0"/>
+            <inertia ixx="${chassis_mass*(chassis_height*chassis_height + chassis_length*chassis_length)/12}" ixy = "0" ixz = "0"
+                     iyy="${chassis_mass*(chassis_width*chassis_width + chassis_length*chassis_length)/12}" iyz= "0"
+                     izz="${chassis_mass*(chassis_width*chassis_width + chassis_height*chassis_height)/12}" />
+        </inertial>
+    </link>
+
+    <joint name="base_footprint_to_base_link" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 ${rear_wheel_radius}" rpy="0 0 0"/>
+    </joint>
+
+    <xacro:macro name="driving_wheel" params="prefix side reflect">
+        <link name="${prefix}_${side}_wheel_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder radius="${rear_wheel_radius}" length="${rear_wheel_width}"/>
+                </geometry>
+                <material name="black">
+                    <color rgba="0.1 0.1 0.1 1.0"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder radius="${rear_wheel_radius}" length="${rear_wheel_width}"/>
+                </geometry>
+            </collision>
+            <xacro:cylinder_inertial_matrix m="${rear_wheel_mass}" r="${rear_wheel_radius}" h="${rear_wheel_width}"/>
+        </link>
+
+        <joint name="${prefix}_${side}_wheel_joint" type="continuous">
+            <parent link="base_link"/>
+            <child link="${prefix}_${side}_wheel_link"/>
+            <origin xyz="0 ${reflect * rear_track / 2} 0" rpy="0 0 0"/> 
+            <axis xyz="0 1 0"/>
+        </joint>
+        
+        <gazebo reference="${prefix}_${side}_wheel_link">
+            <material>Gazebo/Black</material>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:macro name="caster_wheel" params="prefix side reflect">
+        <link name="${prefix}_${side}_wheel_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder radius="${caster_radius}" length="${caster_width}"/>
+                </geometry>
+                <material name="grey"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder radius="${caster_radius}" length="${caster_width}"/>
+                </geometry>
+            </collision>
+            <xacro:cylinder_inertial_matrix m="${caster_mass}" r="${caster_radius}" h="${caster_width}"/>
+        </link>
+        
+        <joint name="${prefix}_${side}_wheel_joint" type="continuous">
+            <parent link="base_link"/>
+            <child link="${prefix}_${side}_wheel_link"/>
+            <origin xyz="${wheelbase} ${reflect * front_track / 2} ${caster_radius - rear_wheel_radius}" rpy="0 0 0"/> 
+            <axis xyz="0 1 0"/>
+        </joint>
+        
+        <gazebo reference="${prefix}_${side}_wheel_link">
+            <material>Gazebo/Grey</material>
+            <mu1>0.0</mu1>
+            <mu2>0.0</mu2>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:driving_wheel prefix="rear" side="left" reflect="1"/>
+    <xacro:driving_wheel prefix="rear" side="right" reflect="-1"/>
+    
+    <xacro:caster_wheel prefix="front" side="left" reflect="1"/>
+    <xacro:caster_wheel prefix="front" side="right" reflect="-1"/>
+
+    <link name="mid360_link">
+        <visual>
+            <geometry>
+                <cylinder radius="${lidar_radius}" length="${lidar_height}"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="${lidar_radius}" length="${lidar_height}"/>
+            </geometry>
+        </collision>
+        <xacro:cylinder_inertial_matrix m="0.2" r="${lidar_radius}" h="${lidar_height}"/>
+    </link>
+    
+    <joint name="mid360_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="mid360_link"/>
+        <origin xyz="${lidar_offset_x} 0 ${lidar_height_ground - rear_wheel_radius}" rpy="0 -${lidar_tilt_angle} 0"/>
+    </joint>
+
+    <link name="camera_link">
+        <visual>
+            <geometry>
+                <box size="${camera_depth} ${camera_width} ${camera_height}"/>
+            </geometry>
+            <material name="dark_grey">
+                <color rgba="0.2 0.2 0.2 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${camera_depth} ${camera_width} ${camera_height}"/>
+            </geometry>
+        </collision>
+        <xacro:Box_inertial_matrix m="0.1" l="${camera_depth}" w="${camera_width}" h="${camera_height}"/>
+    </link>
+    
+    <joint name="d435i_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="camera_link"/>
+        <origin xyz="${camera_offset_x} 0 ${camera_height_ground - rear_wheel_radius}" 
+                rpy="0 0 0"/>
+    </joint>
+    
+    <gazebo>
+        <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+            <robotNamespace>/</robotNamespace>
+            <odometrySource>0</odometrySource>
+            <publishWheelTF>false</publishWheelTF>
+            <publishTf>1</publishTf>
+            <publishWheelJointState>true</publishWheelJointState>
+            <updateRate>100.0</updateRate>
+            
+            <leftJoint>rear_left_wheel_joint</leftJoint>
+            <rightJoint>rear_right_wheel_joint</rightJoint>
+            
+            <wheelSeparation>${rear_track}</wheelSeparation>
+            <wheelDiameter>${rear_wheel_diameter}</wheelDiameter>
+            
+            <wheelTorque>50</wheelTorque>
+            <wheelAcceleration>3.0</wheelAcceleration>
+            
+            <commandTopic>cmd_vel</commandTopic>
+            <odometryFrame>odom</odometryFrame>
+            <odometryTopic>odom</odometryTopic>
+            <robotBaseFrame>base_footprint</robotBaseFrame>
+        </plugin>
+    </gazebo>
+    
+    <gazebo reference="mid360_link">
+      <material>Gazebo/Black</material>
+      <sensor type="gpu_ray" name="mid360_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>10</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1</resolution>
+              <min_angle>-${PI}</min_angle>
+              <max_angle>${PI}</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>16</samples>
+              <resolution>1</resolution>
+              <min_angle>-${10*PI/180}</min_angle>
+              <max_angle>${70*PI/180}</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.1</min>
+            <max>30.0</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <plugin name="gazebo_ros_gpu_laser" filename="libgazebo_ros_gpu_laser.so">
+          <topicName>/mid360/points</topicName>
+          <frameName>mid360_link</frameName>
+        </plugin>
+      </sensor>
+    </gazebo>
+    
+    <gazebo reference="camera_link">
+        <sensor type="depth" name="d435i_camera">
+            <always_on>true</always_on>
+            <update_rate>20.0</update_rate>
+            <camera>
+                <horizontal_fov>1.089</horizontal_fov>
+                <image>
+                    <format>R8G8B8</format>
+                    <width>640</width>
+                    <height>480</height>
+                </image>
+                <clip>
+                    <near>0.05</near>
+                    <far>8.0</far>
+                </clip>
+            </camera>
+            <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
+                <cameraName>d435i</cameraName>
+                <alwaysOn>true</alwaysOn>
+                <updateRate>10</updateRate>
+                <imageTopicName>rgb/image_raw</imageTopicName>
+                <depthImageTopicName>depth/image_raw</depthImageTopicName>
+                <pointCloudTopicName>depth/points</pointCloudTopicName>
+                <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+                <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+                <frameName>d435i_depth_optical_frame</frameName>
+                <pointCloudCutoff>0.1</pointCloudCutoff>
+                <pointCloudCutoffMax>10.0</pointCloudCutoffMax>
+            </plugin>
+        </sensor>
+    </gazebo>
+    <gazebo reference="mid360_link">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate> <visualize>true</visualize>
+            <topic>__default_topic__</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>/livox/imu</topicName>       <bodyName>mid360_link</bodyName>        <updateRateHZ>100.0</updateRateHZ>
+                <gaussianNoise>0.0</gaussianNoise>      <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>mid360_link</frameName>      <initialOrientationAsReference>false</initialOrientationAsReference>
+            </plugin>
+            <pose>0 0 0 0 0 0</pose>
+        </sensor>
+    </gazebo>
+
+</robot>

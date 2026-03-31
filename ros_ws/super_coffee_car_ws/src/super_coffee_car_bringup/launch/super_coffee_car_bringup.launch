@@ -1,0 +1,51 @@
+<launch>
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find super_coffee_car_description)/urdf/super_coffee_car.urdf.xacro" />
+  
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="imu_tf_broadcaster"
+        args="0 0 0 0 0 0 mid360_link livox_frame" />
+
+  <node pkg="stm32_comm" type="stm32_node" name="base_driver" output="screen">
+    <remap from="/cmd_vel" to="/cmd_vel"/> 
+  </node>
+
+  <param name="user_config_path" type="string" value="/home/nier1316/super_coffee_car_ws/src/livox_ros_driver2/config/MID360_config.json"/>
+  <param name="frame_id" type="string" value="mid360_link"/>
+  <param name="xfer_format" value="0"/>
+  <param name="multi_topic" value="0"/>
+  <param name="data_src" value="0"/>
+  <param name="publish_freq" type="double" value="10.0"/>
+  <param name="output_data_type" value="0"/>
+  <param name="cmdline_str" type="string" value="livox0000000001"/>
+  <param name="cmdline_file_path" type="string" value="livox_test.lvx"/>
+  
+  <node name="livox_lidar_publisher2" pkg="livox_ros_driver2"
+        type="livox_ros_driver2_node" required="true"
+        output="screen" />
+
+  <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+    <remap from="cloud_in" to="/livox/lidar"/> 
+    <remap from="scan" to="/scan"/>
+    <param name="target_frame" value="mid360_link"/> 
+    <param name="transform_tolerance" value="0.01"/>
+    <param name="min_height" value="-0.1"/>
+    <param name="max_height" value="0.1"/>
+    <param name="angle_min" value="-3.14159"/> 
+    <param name="angle_max" value="3.14159"/> 
+    <param name="angle_increment" value="0.0087"/> 
+    <param name="scan_time" value="0.1"/>
+    <param name="range_min" value="0.2"/>
+    <param name="range_max" value="30.0"/>
+    <param name="use_inf" value="false"/> 
+  </node>
+
+  <node pkg="super_coffee_car_bringup" type="imu_calibrator.py" name="imu_calibrator" output="screen" respawn="true"/>
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+      <rosparam command="load" file="$(find super_coffee_car_navigation)/param/ekf.yaml" />
+      <remap from="/odometry/filtered" to="/odom"/>
+  </node>
+
+</launch>
